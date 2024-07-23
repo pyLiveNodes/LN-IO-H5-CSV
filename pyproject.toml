@@ -10,7 +10,8 @@ authors = [
 # pip install -e . --extra-index-url https://package_puller:8qYs4hBAsmAHJ5AdS_y9@gitlab.csl.uni-bremen.de/api/v4/groups/368/-/packages/pypi/simple
 dependencies = [
     "livenodes>=v0.11.3",
-    "livenodes_common_ports",
+    "livenodes_common_ports>=0.9.0b2",
+    "livenodes_io_python",
     "numpy>=1.24.4",
     "tsfel",
     "h5py",
