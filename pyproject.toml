@@ -24,9 +24,9 @@ dependencies = [
 # FIX upstream and remove here
 
 [project.entry-points."livenodes.nodes"]
-in_function = "livenodes_io_python.in_function:In_function"
-in_python = "livenodes_io_python.in_python:In_python"
-out_python = "livenodes_io_python.out_python:Out_python"
+in_h5_csv = "livenodes_io_h5_csv.in_h5_csv:In_h5_csv"
+in_playback_h5_csv = "livenodes_io_h5_csv.in_playback_h5_csv:In_playback_h5_csv"
+out_h5_csv = "livenodes_io_h5_csv.out_h5_csv:Out_h5_csv"
 
 [project.optional-dependencies]
 dev = [
