@@ -45,6 +45,6 @@ class Annotate_channel(Node):
             self.idx = np.array(channels) == self.channel_name
             self.ret_accu(np.array(channels)[~self.idx], port=self.ports_out.channels)
 
-        self.ret_accu(ts[:, :, ~self.idx], port=self.ports_out.ts)
-        self.ret_accu(np.where(ts[:, :, self.idx] > 0, self.targets[1], self.targets[0]), port=self.ports_out.annot)
+        self.ret_accu(ts[:, ~self.idx], port=self.ports_out.ts)
+        self.ret_accu(np.where(ts[:, self.idx].flatten() > 0, self.targets[1], self.targets[0]), port=self.ports_out.annot)
         return self.ret_accumulated()
