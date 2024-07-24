@@ -28,6 +28,7 @@ dependencies = [
 in_h5_csv = "livenodes_io_h5_csv.in_h5_csv:In_h5_csv"
 in_playback_h5_csv = "livenodes_io_h5_csv.in_playback_h5_csv:In_playback_h5_csv"
 out_h5_csv = "livenodes_io_h5_csv.out_h5_csv:Out_h5_csv"
+annotate_channel = "livenodes_io_h5_csv.annotate_channel:Annotate_channel"
 
 [project.optional-dependencies]
 dev = [
