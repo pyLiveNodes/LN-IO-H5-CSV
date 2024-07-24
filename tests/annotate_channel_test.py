@@ -36,7 +36,3 @@ class TestProcessing:
         g.start_all()
         g.join_all()
         g.stop_all()
-
-        print(collect_data.get_state())
-        print(collect_channels.get_state())
-        print(collect_annot.get_state())
