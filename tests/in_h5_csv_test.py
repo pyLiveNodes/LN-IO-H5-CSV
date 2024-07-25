@@ -84,8 +84,8 @@ class TestProcessing:
         actual_data = np.array(results.ts.get_state())
         actual_channels = results.channels.get_state()[0]
 
-        np.testing.assert_equal(expected_data, actual_data)
-        np.testing.assert_equal(expected_channels, actual_channels)
+        np.testing.assert_equal(actual_data, expected_data)
+        np.testing.assert_equal(actual_channels, expected_channels)
 
     def test_data_and_channels(self, tmp_path):
 
@@ -98,8 +98,8 @@ class TestProcessing:
         actual_data = np.array(results.ts.get_state())
         actual_channels = results.channels.get_state()[0]
 
-        np.testing.assert_equal(expected_data, actual_data)
-        np.testing.assert_equal(channels, actual_channels)
+        np.testing.assert_equal(actual_data, expected_data)
+        np.testing.assert_equal(actual_channels, channels)
 
     def test_data_and_more_channels(self, tmp_path):
 
@@ -112,8 +112,8 @@ class TestProcessing:
         actual_data = np.array(results.ts.get_state())
         actual_channels = results.channels.get_state()[0]
 
-        np.testing.assert_equal(expected_data, actual_data)
-        np.testing.assert_equal(channels[:5], actual_channels)
+        np.testing.assert_equal(actual_data, expected_data)
+        np.testing.assert_equal(actual_channels, channels[:5])
 
     def test_data_and_fewer_channels(self, tmp_path):
 
@@ -127,8 +127,8 @@ class TestProcessing:
         actual_data = np.array(results.ts.get_state())
         actual_channels = results.channels.get_state()[0]
 
-        np.testing.assert_equal(expected_data, actual_data)
-        np.testing.assert_equal(expected_channels, actual_channels)
+        np.testing.assert_equal(actual_data, expected_data)
+        np.testing.assert_equal(actual_channels, expected_channels)
 
     def test_annot(self, tmp_path):
         _prepare_data(tmp_path, generate_annot=True)
@@ -137,7 +137,7 @@ class TestProcessing:
 
         actual_annot = results.annot.get_state()[0]
 
-        np.testing.assert_equal(_anot, actual_annot)
+        np.testing.assert_equal(actual_annot, _anot)
 
     def test_annot_empty(self, tmp_path):
         _prepare_data(tmp_path)
@@ -146,7 +146,7 @@ class TestProcessing:
 
         actual_annot = results.annot.get_state()[0]
 
-        np.testing.assert_equal([], actual_annot)
+        np.testing.assert_equal(actual_annot, [])
 
     def test_percent_single(self, tmp_path):
         _prepare_data(tmp_path)
@@ -156,7 +156,7 @@ class TestProcessing:
         expected_percent = [1.0]
         actual_percent = results.percent.get_state()
 
-        np.testing.assert_equal(expected_percent, actual_percent)
+        np.testing.assert_equal(actual_percent, expected_percent)
 
     def test_percent_multiple(self, tmp_path):
         for _ in range(4):
@@ -167,4 +167,4 @@ class TestProcessing:
         expected_percent = [0.25, 0.5, 0.75, 1.0]
         actual_percent = results.percent.get_state()
 
-        np.testing.assert_equal(expected_percent, actual_percent)
+        np.testing.assert_equal(actual_percent, expected_percent)

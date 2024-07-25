@@ -87,9 +87,9 @@ def _run_single_test(tmp_path, emit_at_once, exp_data_shape, empty_annot=False, 
     actual_annot = results.annot.get_state()
     actual_channels = results.channels.get_state()[0]
 
-    np.testing.assert_equal(expected_data, actual_data)
-    np.testing.assert_equal(expected_annot, actual_annot)
-    np.testing.assert_equal(channels, actual_channels)
+    np.testing.assert_equal(actual_data, expected_data)
+    np.testing.assert_equal(actual_annot, expected_annot)
+    np.testing.assert_equal(actual_channels, channels)
 
 
 class TestProcessing:
