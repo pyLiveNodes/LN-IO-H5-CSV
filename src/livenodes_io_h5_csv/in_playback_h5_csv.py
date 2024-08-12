@@ -20,13 +20,67 @@ class Ports_out(NamedTuple):
 
 
 class In_playback_h5_csv(Producer_async):
-    """
-    Playsback previously recorded data.
+    """Reads and plays back HDF5/.h5 data and corresponding .csv annotation.
 
-    Expects the following setup variables:
-    - files (str): glob pattern for files
-    - sample_rate (number): sample rate to simulate in frames per second
-    - batch_size (int, default=5): number of frames that are sent at the same time -> not implemented yet
+    Batch size depends on the `emit_at_once` parameter, e.g. value 5 means that
+    each batch will contain 5 samples. Higher values increase processing
+    efficiency, but reduce the effective frame rate for following nodes (since
+    playback "waits" until batch is filled before sending). Values around 10-20
+    are recommended. For sending whole files as one batch use the `In_h5_csv`
+    node instead.
+
+    This node simulates real-time usage via the `sample_rate` meta parameter.
+    The time between each `process` invocation depends on both `emit_at_once`
+    and `sample_rate`.
+
+    If a valid annotation CSV file with the same base name is found, its
+    content is sent via the Annotation port. .h5 and .csv files created via
+    the `Out_h5_csv` node automatically follow this format.
+
+    Attributes
+    ----------
+    files : str
+        glob pattern for files to include. Should end with ".h5" extension.
+        Common examples are single files ("../data/data.h5") or all files in a
+        directory ("../data/*.h5"). In the case of multiple files, a random
+        file is selected.
+    loop : bool
+        Whether to loop playback or stop when a file's data is sent. If the
+        `files` glob pattern contains multiple files and `loop` is `True`, the
+        file selection is re-randomized on each loop.
+    sample_rate : int
+        Sample rate to simulate in frames per second.
+    emit_at_once : int
+        Batch size.
+    compute_on : str
+        Multiprocessing/-threading location to run node on. Advanced feature;
+        see LiveNodes core docs for details.
+    meta : dict
+        Dict of meta parameters.
+
+        * 'sample_rate' : int
+            Sample rate to simulate.
+        * 'channel_names' : list of unique str
+            List of channel names for `channels` port.
+        * 'targets' : list of unique str
+            [DEPRECATED, UNUSED] List of possible target/annotation strings.
+
+    annotation_holes : str
+        [DEPRECATED] Fallback annotation string to use if missing for a sample.
+
+
+    Ports Out
+    ---------
+    ts : Port_TimeSeries
+        Data batch of size `emit_at_once` read from input HDF5/.h5 file.
+    channels : Port_ListUnique_Str
+        List of channel names defined with the `meta` attribute. Sent only once
+        on the first batch.
+    annot : Port_List_Str
+        List of annotation strings corresponding to data batch, with one string
+        per data sample. Only sent if valid .csv annotation file found.
+        Otherwise empty list (if file does not exist) or list filled with
+        `annotation_holes` backup string (if file exists, but empty).
     """
 
     ports_in = Ports_empty()
@@ -40,11 +94,11 @@ class In_playback_h5_csv(Producer_async):
         'files': './data/*.h5',
         'meta': {'sample_rate': 1000, 'targets': ['stand'], 'channels': ['channel 1']},
         'annotation_holes': 'stand',
-        'emit_at_once': 20,
+        'emit_at_once': 10,
     }
 
     # TODO: consider using a file for meta data instead of dictionary...
-    def __init__(self, files, meta, loop=True, emit_at_once=1, annotation_holes="stand", name="Playback", compute_on="1", **kwargs):
+    def __init__(self, files, meta, loop=True, emit_at_once=10, annotation_holes="stand", name="Playback", compute_on="1", **kwargs):
         super().__init__(name=name, compute_on=compute_on, **kwargs)
 
         self.meta = meta

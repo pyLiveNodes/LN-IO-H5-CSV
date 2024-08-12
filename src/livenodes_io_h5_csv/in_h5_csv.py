@@ -37,28 +37,49 @@ def read_data(f):
 
 
 class In_h5_csv(Producer_async):
-    """
-    Reads and sends previously recorded data files
-    via the Data port. Each batch contains the entire
-    dataset of a file. For custom batch sizes use the
-    In_data node and its emit_at_once setting instead.
+    """Reads and sends HDF5/.h5 data and corresponding .csv annotation.
 
-    By default, channels sent via the Channel Names
-    port are named ascending from 0. These can be
-    overwritten by passing a new list of names as a
-    meta parameter.
+    Each batch contains the entire dataset of a file. For custom batch sizes
+    and real-time simulation use the `In_playback_h5_csv` node with its
+    `emit_at_once` and `sample_rate` settings instead.
 
-    If a valid annotation CSV file is found, its
-    content is sent via the Annotation port. Otherwise,
-    an empty list is sent.
+    By default, channels sent via the Channel Names port are named ascending
+    from 0. These can be overwritten by passing a new list of names as a meta
+    parameter.
 
-    After each file is processed, the Percent port is
-    also updated accordingly.
+    If a valid annotation CSV file with the same base name is found, its
+    content is sent via the Annotation port. .h5 and .csv files created via
+    the `Out_h5_csv` node automatically follow this format.
 
-    Parameters:
-    - files (str): glob pattern for files
-    - meta (dict): dict of meta parameters
-        - channels (list of str): List of channel names.
+    After each file is processed, the Percent port is also updated accordingly.
+    One common usage example is triggering model training once all files are
+    sent.
+
+    Attributes
+    ----------
+    files : str
+        glob pattern for files to include. Should end with ".h5" extension.
+        Common examples are single files ("../data/data.h5") or all files in a
+        directory ("../data/*.h5").
+    meta : dict
+        Dict of meta parameters.
+
+        * 'sample_rate' : int
+            Sample rate to simulate.
+        * 'channel_names' : list of unique str, optional
+            List of channel names for `channels` port.
+
+    Ports Out
+    ---------
+    ts : Port_TimeSeries
+        HDF5/.h5 data file contents as TimeSeries.
+    channels : Port_ListUnique_Str
+        List of channel names. Can be overwritten using the `meta` attribute.
+    annot : Port_List_Str
+        List of annotation strings, one per data sample. Only sent if valid
+        .csv annotation file found. Otherwise empty list.
+    percent : Port_Number
+        Percentage of files sent so far. Float values from 0.0 to 1.0.
     """
 
     ports_in = Ports_empty()
