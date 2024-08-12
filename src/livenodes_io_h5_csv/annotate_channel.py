@@ -46,7 +46,7 @@ class Annotate_channel(Node):
     Ports Out
     ---------
     ts : Port_TimeSeries
-        Input data batch without the specified annotation channel.
+        Data batch without the specified annotation channel.
     channels : Port_ListUnique_Str
         List of channel names without the specified annotation channel. Sent
         only once on the first batch.
