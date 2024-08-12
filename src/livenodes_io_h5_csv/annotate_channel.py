@@ -13,6 +13,48 @@ class Ports_out(NamedTuple):
 
 
 class Annotate_channel(Node):
+    """Creates annotation based on the specified channel and target names.
+
+    Two target names can be set via the `targets` attribute. Semantically, this
+    is often a pair of an idle and an active state. Examples are
+    `["Off", "On"]`, `["Stand", "Walk"]` or `["Nothing", "Tap"]`.
+
+    The sample value of the specified channel then determines which of the two
+    target names to send via the Annotation port. If the value is zero or less,
+    the first name is selected, otherwise the second. The specified channel is
+    also removed from the TimeSeries, leaving only the "actual" data channels.
+
+    Note that this assumes that the specified channel actually contains the
+    relevant information like from a hardware button with two different states.
+    Using a regular signal data channel may produce nonsensical results. The
+    channel must also be a part of those input via the Channel Names port.
+
+    Attributes
+    ----------
+    channel_name : str
+        Name of the input channel used to generate annotation.
+    targets : List of str
+        List of two annotation target names. Further list elements are ignored.
+
+    Ports In
+    --------
+    ts : Port_TimeSeries
+        Input data batch.
+    channels : Port_ListUnique_Str
+        List of channel names. Sent only once on the first batch.
+
+    Ports Out
+    ---------
+    ts : Port_TimeSeries
+        Input data batch without the specified annotation channel.
+    channels : Port_ListUnique_Str
+        List of channel names without the specified annotation channel. Sent
+        only once on the first batch.
+    annot : Port_List_Str
+        List of annotation strings corresponding to data batch, with one string
+        per data sample.
+    """
+
     ports_in = Ports_ts_channels()
     ports_out = Ports_out()
 
