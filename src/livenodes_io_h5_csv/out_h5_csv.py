@@ -16,9 +16,46 @@ class Ports_in(NamedTuple):
     ts: Port_Timeseries = Port_Timeseries("TimeSeries")  # ie (time, channel)
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
     annot: Port_List_Str = Port_List_Str("Annotation")  # ie (time, channel), where there should be only one channel
+    # NOTE: Simplify annot or turn into TimeSeries? -> TS would allow compatibility with Window node
 
 
 class Out_h5_csv(Node):
+    """Writes data to HDF5/.h5 files and (optionally) annotation to .csv files.
+
+    Once processing has finished, data is written to a HDF5/.h5 file with the
+    current timestamp string as base name. More specifically, a dataset named
+    "data" is created with data samples in rows and channels in columns.
+
+    If the Annotation port is connected, the annotation will also be saved to a
+    .csv file with the same base name. Each line contains a triple of the start
+    sample number, the end sample number (exclusive), and the respective
+    annotation string.
+
+    While the Channel Names port must be connected, the channels are currently
+    not saved to a file. TODO: Ask Yale about this.
+
+    Files created using this node is automatically compatible with the
+    `In_h5_csv` and `In_playback_h5_csv` nodes.
+
+    Attributes
+    ----------
+    folder : str
+        folder to save data files to.
+    compute_on : str
+        Multiprocessing/-threading location to run node on. Advanced feature;
+        see LiveNodes core docs for details.
+
+    Ports In
+    --------
+    ts : Port_TimeSeries
+        Data batch to be saved to HDF5/.h5 file.
+    channels : Port_ListUnique_Str
+        List of channel names. Only required on the first process invocation.
+    annot : Port_List_Str, optional
+        List of annotation strings corresponding to data batch to be saved to
+        .csv file, with one string per data sample. Ignored if not connected.
+    """
+
     ports_in = Ports_in()
     ports_out = Ports_empty()
 
