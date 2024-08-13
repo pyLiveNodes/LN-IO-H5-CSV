@@ -1,13 +1,30 @@
-# LiveNodes IO Python
+# LiveNodes IO H5 CSV
 
-The LiveNodes IO Python package provides nodes for data input and output using raw Python lists/NumPy arrays directly, as well as for generating data from NumPy functions. As such, these nodes are most useful for testing other nodes or extracting results from LiveNodes graphs for further external processing.
+The LiveNodes IO H5 CSV package provides nodes for data input and output using HDF5/.h5 data files. Optionally, this also includes data annotations via .csv
+files.
+
+For HDF5/.h5 data files, the expected format is a dataset named "data" with samples in rows and channels in columns.
+
+For .csv annotation files, each line contains a triple of the start sample number, the end sample number (exclusive), and the respective annotation string.
+See the following example:
+
+```
+start,end,act
+0,30,Stand
+30,50,Walk
+50,80,Run
+80,100,Stand
+```
+
+Files created using the `Out_h5_csv` node automatically follow these formats.
 
 ## Nodes in this package
-| Node          | Purpose                                                               |
-| ------------- | --------------------------------------------------------------------- |
-| `In_function` | Inputs data generated from a NumPy function into the LiveNodes graph. |
-| `In_python`   | Inputs any python data into the LiveNodes graph.                      |
-| `Out_python`  | Saves all input data into an externally accessible list.              |
+| Node                  | Purpose                                                                  |
+| --------------------- | ------------------------------------------------------------------------ |
+| `Annotate_channel`    | Creates annotation based on the specified channel and target names.      |
+| `In_h5_csv`           | Reads and sends HDF5/.h5 data and corresponding .csv annotation.         |
+| `In_playback_h5_csv`  | Reads and plays back HDF5/.h5 data and corresponding .csv annotation.    |
+| `Out_h5_csv`          | Writes data to HDF5/.h5 files and (optionally) annotation to .csv files. |
 
 ## About LiveNodes
 [LiveNodes](https://livenodes.pages.csl.uni-bremen.de/livenodes/index.html) are small units of computation for digital signal processing in python. They are connected multiple synced channels to create complex graphs for real-time applications. Each node may provide a GUI or Graph for live interaction and visualization.
@@ -20,11 +37,11 @@ Yale
 
 ## Installation
 
-`pip install livenodes_io_python --extra-index-url https://package_puller:8qYs4hBAsmAHJ5AdS_y9@gitlab.csl.uni-bremen.de/api/v4/groups/368/-/packages/pypi/simple`
+`pip install livenodes_io_h5_csv --extra-index-url https://package_puller:8qYs4hBAsmAHJ5AdS_y9@gitlab.csl.uni-bremen.de/api/v4/groups/368/-/packages/pypi/simple`
 
 ## Docs
 
-You can find the docs [here](https://livenodes.pages.csl.uni-bremen.de/packages/livenodes_io_python/readme.html).
+You can find the docs [here](https://livenodes.pages.csl.uni-bremen.de/packages/livenodes_io_h5_csv/readme.html).
 
 ## Restrictions
 
