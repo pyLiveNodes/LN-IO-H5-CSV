@@ -64,7 +64,8 @@ class Out_h5_csv(Node):
 
     example_init = {'name': 'Save', 'folder': './data/Debug/'}
 
-    def __init__(self, folder, name="Save", compute_on="1:1", **kwargs):
+    def __init__(self, folder, name="Save", compute_on="", **kwargs):
+        # NOTE: Previous default compute_on="1:1" often caused file write failures, investigate before changing back.
         super().__init__(name, compute_on=compute_on, **kwargs)
 
         self.folder = folder
