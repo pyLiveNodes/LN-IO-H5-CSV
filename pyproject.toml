@@ -1,5 +1,5 @@
 [project]
-name = "Livenodes-IO-h5-CSV"
+name = "Livenodes-IO-h5-csv"
 dynamic = ['version']
 description = "LiveNodes: node based live streaming sensor/data and visualization suite."
 authors = [
