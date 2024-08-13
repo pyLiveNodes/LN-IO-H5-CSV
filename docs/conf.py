@@ -24,6 +24,7 @@ copyright = '{0}, {1}'.format(year, author)
 
 # determine version number
 import re
+
 # The full version, including alpha/beta/rc tags.
 release = re.sub('^v', '', os.popen('git describe').read().strip())
 # The short X.Y version.
@@ -52,5 +53,6 @@ html_short_title = '%s-%s' % (project, version)
 napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False
+napoleon_custom_sections = [('Ports In', 'params_style'), ('Ports Out', 'params_style'), ('Methods', 'params_style')]
 
 linkcheck_ignore = [r'https://livenodes\.pages\.csl\.uni-bremen\.de/.*']
