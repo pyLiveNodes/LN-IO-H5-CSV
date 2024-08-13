@@ -68,7 +68,6 @@ class In_playback_h5_csv(Producer_async):
     annotation_holes : str
         [DEPRECATED] Fallback annotation string to use if missing for a sample.
 
-
     Ports Out
     ---------
     ts : Port_TimeSeries
