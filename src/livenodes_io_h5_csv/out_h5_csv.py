@@ -8,7 +8,7 @@ import numpy as np
 from livenodes.node import Node
 
 
-from livenodes_common_ports.ports import Port_Dict, Port_ListUnique_Str, Port_Timeseries, Port_List_Str, Ports_empty
+from livenodes_common_ports.ports import Port_ListUnique_Str, Port_Timeseries, Port_List_Str, Ports_empty
 from typing import NamedTuple
 
 
@@ -16,7 +16,6 @@ class Ports_in(NamedTuple):
     ts: Port_Timeseries = Port_Timeseries("TimeSeries")  # ie (time, channel)
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
     annot: Port_List_Str = Port_List_Str("Annotation")  # ie (time, channel), where there should be only one channel
-    meta: Port_Dict = Port_Dict("Meta")
 
 
 class Out_h5_csv(Node):
@@ -48,7 +47,6 @@ class Out_h5_csv(Node):
         self.last_annotation = None
 
         self.channels = None
-        self.rec_meta = False
 
         self.running = False
 
@@ -76,37 +74,23 @@ class Out_h5_csv(Node):
             self.outputFile.close()
             self.info('Stopped writing out and closed files')
 
-    def _should_process(self, ts=None, channels=None, meta=None, annot=None):
+    def _should_process(self, ts=None, channels=None, annot=None):
         return (
             ts is not None
             and (self.channels is not None or channels is not None)
-            and ((meta is not None or self.rec_meta) or not self._is_input_connected(self.ports_in.meta))
             and (annot is not None or not self._is_input_connected(self.ports_in.annot))
         )
 
-    def process(self, ts, channels=None, meta=None, annot=None, **kwargs):
+    def process(self, ts, channels=None, annot=None, **kwargs):
 
         if channels is not None:
             self.channels = channels
-
-            m_dict = self._read_meta()
-            m_dict['channels'] = channels
-            self._write_meta(m_dict)
 
             if self.outputDataset is None:
 
                 self.outputDataset = self.outputFile.create_dataset(
                     "data", (0, len(self.channels)), maxshape=(None, len(self.channels)), dtype=np.array(ts).dtype
                 )
-
-        if meta is not None:
-            self.rec_meta = True
-            m_dict = self._read_meta()
-            for key, val in meta.items():
-                # We'll assume that the channels are always hooked up
-                if key != "channels":
-                    m_dict[key] = val
-            self._write_meta(m_dict)
 
         if annot is not None:
             # self.receive_annotation(np.vstack(annotation))
@@ -142,13 +126,3 @@ class Out_h5_csv(Node):
                 # self.debug(f"writing: {self.last_annotation[1]},{self.last_annotation[2]},{self.last_annotation[0]}")
                 self.outputFileAnnotation.write(f"{self.last_annotation[1]},{self.last_annotation[2]},{self.last_annotation[0]}\n")
                 self.last_annotation = (annotation, self.last_annotation[2], self.last_annotation[2] + 1)
-
-    def _read_meta(self):
-        if not os.path.exists(f"{self.outputFilename}.json"):
-            return {}
-        with open(f"{self.outputFilename}.json", 'r') as f:
-            return json.load(f)
-
-    def _write_meta(self, setting):
-        with open(f"{self.outputFilename}.json", 'w') as f:
-            json.dump(setting, f, indent=2)
