@@ -1,4 +1,7 @@
 from typing import NamedTuple
+from glob import glob
+from pathlib import Path
+import json
 import numpy as np
 import logging
 
@@ -26,7 +29,6 @@ def _prepare_data(tmp_path, generate_annot=True):
     data = np.arange(100).reshape((1, 20, 5))  # 20 samples with 5 channels each
 
     data_in = In_python(name="A", data=data)
-    # Channels defined here not part of test; only needed for Out_h5_csv to work
     channels_in = In_python(name="Channels", data=[["A", "B", "C", "D", "E"]])
 
     collect_data = Out_python(name="B")
@@ -110,3 +112,16 @@ class TestProcessing:
 
     def test_annot_empty(self, tmp_path):
         _run_single_test(tmp_path, emit_at_once=1, exp_data_shape=(20, 1, 5), empty_annot=True)
+
+    def test_channels(self, tmp_path):
+        _prepare_data(tmp_path)
+
+        files = glob('*.json', root_dir=tmp_path)
+        assert len(files) == 1
+        file = Path(tmp_path).joinpath(files[0])
+
+        with open(file, 'r') as f:
+            entries = json.load(f)
+
+        assert "channels" in entries
+        assert entries.get("channels") == ["A", "B", "C", "D", "E"]

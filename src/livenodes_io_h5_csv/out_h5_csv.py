@@ -128,6 +128,9 @@ class Out_h5_csv(Node):
                     "data", (0, len(self.channels)), maxshape=(None, len(self.channels)), dtype=np.array(ts).dtype
                 )
 
+        if channels is not None:
+            self._write_meta({'channels': channels})
+
         if annot is not None:
             self.receive_annotation(annot)
 
@@ -154,3 +157,13 @@ class Out_h5_csv(Node):
             else:
                 self.outputFileAnnotation.write(f"{self.last_annotation[1]},{self.last_annotation[2]},{self.last_annotation[0]}\n")
                 self.last_annotation = (annotation, self.last_annotation[2], self.last_annotation[2] + 1)
+
+    def _read_meta(self):
+        if not os.path.exists(f"{self.outputFilename}.json"):
+            return {}
+        with open(f"{self.outputFilename}.json", 'r') as f:
+            return json.load(f)
+
+    def _write_meta(self, setting):
+        with open(f"{self.outputFilename}.json", 'w') as f:
+            json.dump(setting, f, indent=2)
