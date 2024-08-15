@@ -20,7 +20,6 @@ class Out_nodes(NamedTuple):
 
 # Example annotation includes small 1 and 2 size blocks to test these edge cases.
 _anot = ["1"] * 5 + ["2"] * 2 + ["3"] * 1 + ["1"] * 2 + ["2"] * 3 + ["3"] * 7
-_anot_empty = [["stand"]] * 20
 
 
 def _prepare_data(tmp_path, generate_annot=True):
@@ -75,7 +74,7 @@ def _run_test_pipeline(tmp_path, emit_at_once, channel_names=None):
 def _run_single_test(tmp_path, emit_at_once, exp_data_shape, empty_annot=False, exp_annot_shape=None):
     if empty_annot:
         expected_data = np.array(_prepare_data(tmp_path, generate_annot=False)).reshape(exp_data_shape)
-        expected_annot = _anot_empty
+        expected_annot = []
     else:
         expected_data = np.array(_prepare_data(tmp_path)).reshape(exp_data_shape)
         expected_annot = np.array(_anot).reshape(exp_annot_shape)

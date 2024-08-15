@@ -97,16 +97,17 @@ class Out_h5_csv(Node):
         if not self.running:
             self.running = True
             self.outputFile = h5py.File(self.outputFilename + '.h5', 'w')
-            self.outputFileAnnotation = open(f"{self.outputFilename}.csv", "w")
-            self.outputFileAnnotation.write("start,end,act\n")
+            if self._is_input_connected(self.ports_in.annot):
+                self.outputFileAnnotation = open(f"{self.outputFilename}.csv", "w")
+                self.outputFileAnnotation.write("start,end,act\n")
             self.info('Created Files')
 
     def _onstop(self):
         if self.running:
             self.running = False
-            if self.last_annotation is not None:
+            if self._is_input_connected(self.ports_in.annot) and self.last_annotation is not None:
                 self.outputFileAnnotation.write(f"{self.last_annotation[1]},{self.last_annotation[2]},{self.last_annotation[0]}")
-            self.outputFileAnnotation.close()
+                self.outputFileAnnotation.close()
 
             self._append_buffer_to_file()
             self.outputFile.close()
