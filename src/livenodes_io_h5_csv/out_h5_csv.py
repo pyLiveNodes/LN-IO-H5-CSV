@@ -31,10 +31,7 @@ class Out_h5_csv(Node):
     sample number, the end sample number (exclusive), and the respective
     annotation string.
 
-    While the Channel Names port must be connected, the channels are currently
-    not saved to a file. TODO: Ask Yale about this.
-
-    Files created using this node is automatically compatible with the
+    Files created using this node are automatically compatible with the
     `In_h5_csv` and `In_playback_h5_csv` nodes.
 
     Attributes
@@ -132,12 +129,8 @@ class Out_h5_csv(Node):
                 )
 
         if annot is not None:
-            # self.receive_annotation(np.vstack(annotation))
             self.receive_annotation(annot)
 
-        # self.outputDataset.resize(self.outputDataset.shape[0] + len(data),
-        #                           axis=0)
-        # self.outputDataset[-len(data):] = data
         self.buffer.append(ts)
         if len(self.buffer) > 100:
             self._append_buffer_to_file()
@@ -150,9 +143,6 @@ class Out_h5_csv(Node):
             self.outputDataset[-len(d) :] = d
 
     def receive_annotation(self, data_frame, **kwargs):
-        # For now lets assume the file is always open before this is called.
-        # TODO: re-consider that assumption
-
         if self.last_annotation is None:
             self.last_annotation = (data_frame[0], 0, 0)
 
@@ -162,6 +152,5 @@ class Out_h5_csv(Node):
             if annotation == self.last_annotation[0]:
                 self.last_annotation = (annotation, self.last_annotation[1], self.last_annotation[2] + 1)
             else:
-                # self.debug(f"writing: {self.last_annotation[1]},{self.last_annotation[2]},{self.last_annotation[0]}")
                 self.outputFileAnnotation.write(f"{self.last_annotation[1]},{self.last_annotation[2]},{self.last_annotation[0]}\n")
                 self.last_annotation = (annotation, self.last_annotation[2], self.last_annotation[2] + 1)
