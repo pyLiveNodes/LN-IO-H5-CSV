@@ -116,7 +116,7 @@ class TestProcessing:
     def test_channels(self, tmp_path):
         _prepare_data(tmp_path)
 
-        files = glob('*.json', root_dir=tmp_path)
+        files = glob(str(Path(tmp_path).joinpath('*.json')))
         assert len(files) == 1
         file = Path(tmp_path).joinpath(files[0])
 
