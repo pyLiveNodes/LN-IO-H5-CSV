@@ -1,4 +1,7 @@
 from typing import NamedTuple
+from glob import glob
+from pathlib import Path
+import json
 import numpy as np
 import logging
 
@@ -168,3 +171,16 @@ class TestProcessing:
         actual_percent = results.percent.get_state()
 
         np.testing.assert_equal(actual_percent, expected_percent)
+
+    def test_channels(self, tmp_path):
+        _prepare_data(tmp_path)
+
+        files = glob(str(Path(tmp_path).joinpath('*.json')))
+        assert len(files) == 1
+        file = Path(tmp_path).joinpath(files[0])
+
+        with open(file, 'r') as f:
+            entries = json.load(f)
+
+        assert "channels" in entries
+        assert entries.get("channels") == ["A", "B", "C", "D", "E"]

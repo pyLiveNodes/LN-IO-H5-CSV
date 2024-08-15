@@ -1,7 +1,4 @@
 from typing import NamedTuple
-from glob import glob
-from pathlib import Path
-import json
 import numpy as np
 import logging
 
@@ -112,16 +109,3 @@ class TestProcessing:
 
     def test_annot_empty(self, tmp_path):
         _run_single_test(tmp_path, emit_at_once=1, exp_data_shape=(20, 1, 5), empty_annot=True)
-
-    def test_channels(self, tmp_path):
-        _prepare_data(tmp_path)
-
-        files = glob(str(Path(tmp_path).joinpath('*.json')))
-        assert len(files) == 1
-        file = Path(tmp_path).joinpath(files[0])
-
-        with open(file, 'r') as f:
-            entries = json.load(f)
-
-        assert "channels" in entries
-        assert entries.get("channels") == ["A", "B", "C", "D", "E"]
