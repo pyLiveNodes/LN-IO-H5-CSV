@@ -20,6 +20,11 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
     The time between each `process` invocation depends on both `emit_at_once`
     and `sample_rate`.
 
+    Channels sent via the Channel Names port are named by priority:
+        - List of names from meta parameter if given.
+        - List of names from valid JSON file if found.
+        - Otherwise ascending from "0".
+
     If a valid annotation CSV file with the same base name is found, its
     content is sent via the Annotation port. .h5 and .csv files created via
     the `Out_h5_csv` node automatically follow this format.
@@ -54,9 +59,9 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
     ---------
     ts : Port_TimeSeries
         Data batch of size `emit_at_once` read from input HDF5/.h5 file.
-    channels : Port_ListUnique_Str
-        List of channel names defined with the `meta` attribute. Sent only once
-        on the first batch.
+    channels : Port_ListUnique_Str, optional
+        List of channel names. Can be loaded from JSON file and/or overwritten
+        using the `meta` attribute.
     annot : Port_TimeSeries, single channel
         Batch of annotation strings corresponding to data batch. Only sent
         if valid .csv annotation file found. Otherwise empty.

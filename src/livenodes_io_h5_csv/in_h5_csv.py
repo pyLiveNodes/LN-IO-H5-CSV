@@ -23,9 +23,10 @@ class In_h5_csv(Abstract_in_h5_csv):
     and real-time simulation use the `In_playback_h5_csv` node with its
     `emit_at_once` and `sample_rate` settings instead.
 
-    By default, channels sent via the Channel Names port are named ascending
-    from 0. These can be overwritten by passing a new list of names as a meta
-    parameter.
+    Channels sent via the Channel Names port are named by priority:
+        - List of names from meta parameter if given.
+        - List of names from valid JSON file if found.
+        - Otherwise ascending from "0".
 
     If a valid annotation CSV file with the same base name is found, its
     content is sent via the Annotation port. .h5 and .csv files created via
@@ -47,14 +48,16 @@ class In_h5_csv(Abstract_in_h5_csv):
         * 'sample_rate' : int
             Sample rate to simulate.
         * 'channel_names' : list of unique str, optional
-            List of channel names for `channels` port.
+            List of channel names for `channels` port. Overwrites default names
+            or those loaded from JSON file.
 
     Ports Out
     ---------
     ts : Port_TimeSeries
         HDF5/.h5 data file contents as TimeSeries.
-    channels : Port_ListUnique_Str
-        List of channel names. Can be overwritten using the `meta` attribute.
+    channels : Port_ListUnique_Str, optional
+        List of channel names. Can be loaded from JSON file and/or overwritten
+        using the `meta` attribute.
     annot : Port_TimeSeries, single channel
         Annotation strings corresponding to data samples. Only sent if valid
         .csv annotation file found. Otherwise empty.
@@ -64,7 +67,7 @@ class In_h5_csv(Abstract_in_h5_csv):
 
     ports_out = Ports_out()
 
-    example_init = {'name': 'In h5 CSV', 'files': 'data/*.h5', 'meta': {'channels': ["Channel 1"]}}
+    example_init = {'name': 'In h5 CSV', 'files': 'data/*.h5', 'meta': {'channels': None}}
 
     def __init__(self, name="In h5 CSV", files='data', meta={}, **kwargs):
         super().__init__(name, files, meta, **kwargs)
