@@ -6,16 +6,6 @@ import glob, random
 from .abstract_in_h5_csv import Abstract_in_h5_csv
 
 
-from livenodes_common_ports.ports import Port_Timeseries, Port_List_Str, Port_List_Str, Ports_empty
-from typing import NamedTuple
-
-
-class Ports_out(NamedTuple):
-    ts: Port_Timeseries = Port_Timeseries("TimeSeries")
-    channels: Port_List_Str = Port_List_Str("Channel Names")
-    annot: Port_List_Str = Port_List_Str("Annotation")
-
-
 class In_playback_h5_csv(Abstract_in_h5_csv):
     """Reads and plays back HDF5/.h5 data and corresponding .csv annotation.
 
@@ -78,8 +68,6 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
         Otherwise empty list (if file does not exist) or list filled with
         `annotation_holes` backup string (if file exists, but empty).
     """
-
-    ports_out = Ports_out()
 
     example_init = {
         'name': 'Playback',
