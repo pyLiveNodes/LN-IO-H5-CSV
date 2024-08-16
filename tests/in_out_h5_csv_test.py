@@ -158,7 +158,7 @@ class TestProcessing:
 
         actual_annot = results.annot.get_state()[0]
 
-        np.testing.assert_equal(actual_annot, _anot)
+        np.testing.assert_equal(actual_annot, np.array(_anot).reshape(-1, 1))
 
     def test_annot_empty(self, tmp_path):
         _prepare_data(tmp_path)
@@ -167,7 +167,7 @@ class TestProcessing:
 
         actual_annot = results.annot.get_state()[0]
 
-        np.testing.assert_equal(actual_annot, [])
+        np.testing.assert_equal(actual_annot, np.array([]).reshape(-1, 1))
 
     def test_percent_single(self, tmp_path):
         _prepare_data(tmp_path)

@@ -1,17 +1,18 @@
 import asyncio
 import glob
+import numpy as np
 import os
 
 from typing import NamedTuple
 
 from .abstract_in_h5_csv import Abstract_in_h5_csv
-from livenodes_common_ports.ports import Port_Timeseries, Port_Number, Port_List_Str, Port_ListUnique_Str
+from livenodes_common_ports.ports import Port_Timeseries, Port_Number, Port_ListUnique_Str
 
 
 class Ports_out(NamedTuple):
     ts: Port_Timeseries = Port_Timeseries("TimeSeries")
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
-    annot: Port_List_Str = Port_List_Str("Annotation")
+    annot: Port_Timeseries = Port_Timeseries("Annotation")
     percent: Port_Number = Port_Number("Percent")
 
 
@@ -54,9 +55,9 @@ class In_h5_csv(Abstract_in_h5_csv):
         HDF5/.h5 data file contents as TimeSeries.
     channels : Port_ListUnique_Str
         List of channel names. Can be overwritten using the `meta` attribute.
-    annot : Port_List_Str
-        List of annotation strings, one per data sample. Only sent if valid
-        .csv annotation file found. Otherwise empty list.
+    annot : Port_TimeSeries, single channel
+        Annotation strings corresponding to data samples. Only sent if valid
+        .csv annotation file found. Otherwise empty.
     percent : Port_Number
         Percentage of files sent so far. Float values from 0.0 to 1.0.
     """
@@ -78,6 +79,7 @@ class In_h5_csv(Abstract_in_h5_csv):
 
             ts, annot, channels = self._read_data(f)
 
+            annot = np.array(annot).reshape(-1, 1)
             channels = self._overwrite_channels(channels, ts.shape[1])
 
             percent = round((i + 1) / n_files, 2)

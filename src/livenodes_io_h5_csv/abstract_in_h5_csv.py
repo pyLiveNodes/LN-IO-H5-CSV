@@ -8,13 +8,13 @@ import numpy as np
 from typing import NamedTuple
 
 from livenodes.producer_async import Producer_async
-from livenodes_common_ports.ports import Ports_empty, Port_Timeseries, Port_List_Str, Port_ListUnique_Str
+from livenodes_common_ports.ports import Ports_empty, Port_Timeseries, Port_ListUnique_Str
 
 
 class Ports_out(NamedTuple):
     ts: Port_Timeseries = Port_Timeseries("TimeSeries")
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
-    annot: Port_List_Str = Port_List_Str("Annotation")
+    annot: Port_Timeseries = Port_Timeseries("Annotation")
 
 
 class Abstract_in_h5_csv(Producer_async, ABC):
@@ -58,7 +58,8 @@ class Abstract_in_h5_csv(Producer_async, ABC):
             if glob.glob(csv_file := f.replace(".h5", ".csv")):
                 if (ref := pd.read_csv(csv_file, delimiter=',')).size > 0:
                     last_end = 0
-                    for _, row in ref.iterrows():
+                    rows = ref.iterrows()
+                    for _, row in rows:
                         annot.append([""] * (row['start'] - last_end))
                         annot.append([str(row['act'])] * (row['end'] - row['start']))
                         last_end = row['end']

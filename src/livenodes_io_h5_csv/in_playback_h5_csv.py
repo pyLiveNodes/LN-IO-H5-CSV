@@ -49,11 +49,6 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
             Sample rate to simulate.
         * 'channel_names' : list of unique str
             List of channel names for `channels` port.
-        * 'targets' : list of unique str
-            [DEPRECATED, UNUSED] List of possible target/annotation strings.
-
-    annotation_holes : str
-        [DEPRECATED] Fallback annotation string to use if missing for a sample.
 
     Ports Out
     ---------
@@ -62,11 +57,9 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
     channels : Port_ListUnique_Str
         List of channel names defined with the `meta` attribute. Sent only once
         on the first batch.
-    annot : Port_List_Str
-        List of annotation strings corresponding to data batch, with one string
-        per data sample. Only sent if valid .csv annotation file found.
-        Otherwise empty list (if file does not exist) or list filled with
-        `annotation_holes` backup string (if file exists, but empty).
+    annot : Port_TimeSeries, single channel
+        Batch of annotation strings corresponding to data batch. Only sent
+        if valid .csv annotation file found. Otherwise empty.
     """
 
     example_init = {
@@ -122,7 +115,7 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
 
                 if len(annot[i : i + self.emit_at_once]) > 0:
                     # use reshape -1, as the data can also be shorter than emit_at_once and will be adjusted accordingly
-                    self.ret_accu(annot[i : i + self.emit_at_once], port=self.ports_out.annot)
+                    self.ret_accu(np.array(annot[i : i + self.emit_at_once]).reshape(-1, 1), port=self.ports_out.annot)
 
                 while time.time() < last_time + sleep_time:
                     await asyncio.sleep(0.0001)

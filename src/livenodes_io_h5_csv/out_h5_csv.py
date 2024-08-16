@@ -8,15 +8,14 @@ import numpy as np
 from livenodes.node import Node
 
 
-from livenodes_common_ports.ports import Port_ListUnique_Str, Port_Timeseries, Port_List_Str, Ports_empty
+from livenodes_common_ports.ports import Port_ListUnique_Str, Port_Timeseries, Ports_empty
 from typing import NamedTuple
 
 
 class Ports_in(NamedTuple):
-    ts: Port_Timeseries = Port_Timeseries("TimeSeries")  # ie (time, channel)
+    ts: Port_Timeseries = Port_Timeseries("TimeSeries")
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
-    annot: Port_List_Str = Port_List_Str("Annotation")  # ie (time, channel), where there should be only one channel
-    # NOTE: Simplify annot or turn into TimeSeries? -> TS would allow compatibility with Window node
+    annot: Port_Timeseries = Port_Timeseries("Annotation")
 
 
 class Out_h5_csv(Node):

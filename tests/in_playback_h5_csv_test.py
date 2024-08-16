@@ -93,19 +93,19 @@ def _run_single_test(tmp_path, emit_at_once, exp_data_shape, empty_annot=False, 
 class TestProcessing:
 
     def test_emit_1(self, tmp_path):
-        _run_single_test(tmp_path, emit_at_once=1, exp_data_shape=(20, 1, 5), exp_annot_shape=(20, 1))
+        _run_single_test(tmp_path, emit_at_once=1, exp_data_shape=(20, 1, 5), exp_annot_shape=(20, 1, 1))
 
     def test_emit_2(self, tmp_path):
-        _run_single_test(tmp_path, emit_at_once=2, exp_data_shape=(10, 2, 5), exp_annot_shape=(10, 2))
+        _run_single_test(tmp_path, emit_at_once=2, exp_data_shape=(10, 2, 5), exp_annot_shape=(10, 2, 1))
 
     def test_emit_5(self, tmp_path):
-        _run_single_test(tmp_path, emit_at_once=5, exp_data_shape=(4, 5, 5), exp_annot_shape=(4, 5))
+        _run_single_test(tmp_path, emit_at_once=5, exp_data_shape=(4, 5, 5), exp_annot_shape=(4, 5, 1))
 
     def test_emit_20(self, tmp_path):
-        _run_single_test(tmp_path, emit_at_once=20, exp_data_shape=(1, 20, 5), exp_annot_shape=(1, 20))
+        _run_single_test(tmp_path, emit_at_once=20, exp_data_shape=(1, 20, 5), exp_annot_shape=(1, 20, 1))
 
     def test_emit_more_than_data(self, tmp_path):  # Should behave the same as data length for emit_at_once
-        _run_single_test(tmp_path, emit_at_once=1000, exp_data_shape=(1, 20, 5), exp_annot_shape=(1, 20))
+        _run_single_test(tmp_path, emit_at_once=1000, exp_data_shape=(1, 20, 5), exp_annot_shape=(1, 20, 1))
 
     def test_annot_empty(self, tmp_path):
         _run_single_test(tmp_path, emit_at_once=1, exp_data_shape=(20, 1, 5), empty_annot=True)
