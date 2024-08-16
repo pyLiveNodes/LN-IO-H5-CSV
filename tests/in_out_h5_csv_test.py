@@ -1,7 +1,7 @@
 from typing import NamedTuple
 from glob import glob
 from pathlib import Path
-import json
+import os
 import numpy as np
 import logging
 
@@ -30,7 +30,6 @@ def _prepare_data(tmp_path, generate_annot=False):
     data = np.arange(100).reshape((1, 20, 5))  # 20 samples with 5 channels each
 
     data_in = In_python(name="A", data=data)
-    # Channels defined here not part of test; only needed for Out_h5_csv to work
     channels_in = In_python(name="Channels", data=[["A", "B", "C", "D", "E"]])
 
     collect_data = Out_python(name="B")
@@ -77,9 +76,28 @@ def _run_test_pipeline(tmp_path, channel_names=None):
 
 class TestProcessing:
 
-    def test_data_only(self, tmp_path):
+    def test_regular(self, tmp_path):
 
         expected_data = _prepare_data(tmp_path)
+        expected_channels = ["A", "B", "C", "D", "E"]
+
+        results = _run_test_pipeline(tmp_path)
+
+        actual_data = np.array(results.ts.get_state())
+        actual_channels = results.channels.get_state()[0]
+
+        np.testing.assert_equal(actual_data, expected_data)
+        np.testing.assert_equal(actual_channels, expected_channels)
+
+    def test_channels_no_json(self, tmp_path):
+
+        expected_data = _prepare_data(tmp_path)
+
+        files = glob(str(Path(tmp_path).joinpath('*.json')))
+        assert len(files) == 1
+        file = Path(tmp_path).joinpath(files[0])
+        os.remove(file)
+
         expected_channels = ["0", "1", "2", "3", "4"]
 
         results = _run_test_pipeline(tmp_path)
@@ -90,7 +108,7 @@ class TestProcessing:
         np.testing.assert_equal(actual_data, expected_data)
         np.testing.assert_equal(actual_channels, expected_channels)
 
-    def test_data_and_channels(self, tmp_path):
+    def test_overwrite_channels(self, tmp_path):
 
         expected_data = _prepare_data(tmp_path)
 
@@ -104,7 +122,7 @@ class TestProcessing:
         np.testing.assert_equal(actual_data, expected_data)
         np.testing.assert_equal(actual_channels, channels)
 
-    def test_data_and_more_channels(self, tmp_path):
+    def test_overwrite_more_channels(self, tmp_path):
 
         expected_data = _prepare_data(tmp_path)
 
@@ -118,12 +136,12 @@ class TestProcessing:
         np.testing.assert_equal(actual_data, expected_data)
         np.testing.assert_equal(actual_channels, channels[:5])
 
-    def test_data_and_fewer_channels(self, tmp_path):
+    def test_overwrite_fewer_channels(self, tmp_path):
 
         expected_data = _prepare_data(tmp_path)
 
         channels = ["CH1", "CH2"]
-        expected_channels = channels + ["2", "3", "4"]
+        expected_channels = channels + ["C", "D", "E"]
 
         results = _run_test_pipeline(tmp_path, channels)
 
@@ -171,16 +189,3 @@ class TestProcessing:
         actual_percent = results.percent.get_state()
 
         np.testing.assert_equal(actual_percent, expected_percent)
-
-    def test_channels(self, tmp_path):
-        _prepare_data(tmp_path)
-
-        files = glob(str(Path(tmp_path).joinpath('*.json')))
-        assert len(files) == 1
-        file = Path(tmp_path).joinpath(files[0])
-
-        with open(file, 'r') as f:
-            entries = json.load(f)
-
-        assert "channels" in entries
-        assert entries.get("channels") == ["A", "B", "C", "D", "E"]

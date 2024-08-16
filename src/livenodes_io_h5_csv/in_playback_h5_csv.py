@@ -2,11 +2,8 @@ import asyncio
 import time
 import numpy as np
 import glob, random
-import h5py
-import pandas as pd
-import os
 
-from livenodes.producer_async import Producer_async
+from .abstract_in_h5_csv import Abstract_in_h5_csv
 
 
 from livenodes_common_ports.ports import Port_Timeseries, Port_List_Str, Port_List_Str, Ports_empty
@@ -19,7 +16,7 @@ class Ports_out(NamedTuple):
     annot: Port_List_Str = Port_List_Str("Annotation")
 
 
-class In_playback_h5_csv(Producer_async):
+class In_playback_h5_csv(Abstract_in_h5_csv):
     """Reads and plays back HDF5/.h5 data and corresponding .csv annotation.
 
     Batch size depends on the `emit_at_once` parameter, e.g. value 5 means that
@@ -82,33 +79,20 @@ class In_playback_h5_csv(Producer_async):
         `annotation_holes` backup string (if file exists, but empty).
     """
 
-    ports_in = Ports_empty()
     ports_out = Ports_out()
-
-    category = "Data Source"
-    description = ""
 
     example_init = {
         'name': 'Playback',
         'files': './data/*.h5',
-        'meta': {'sample_rate': 1000, 'targets': ['stand'], 'channels': ['channel 1']},
-        'annotation_holes': 'stand',
+        'meta': {'sample_rate': 1000, 'channels': None},
         'emit_at_once': 10,
     }
 
-    # TODO: consider using a file for meta data instead of dictionary...
-    def __init__(self, files, meta, loop=True, emit_at_once=10, annotation_holes="stand", name="Playback", compute_on="1", **kwargs):
-        super().__init__(name=name, compute_on=compute_on, **kwargs)
-
-        self.meta = meta
-        self.files = files
+    def __init__(self, files, meta, loop=True, emit_at_once=10, name="Playback", compute_on="1", **kwargs):
+        super().__init__(name=name, files=files, meta=meta, compute_on=compute_on, **kwargs)
         self.loop = loop
         self.emit_at_once = emit_at_once
-        self.annotation_holes = annotation_holes
-
         self.sample_rate = meta.get('sample_rate')
-        self.targets = meta.get('targets')
-        self.channels = meta.get('channels')
 
     def _settings(self):
         return {
@@ -116,7 +100,6 @@ class In_playback_h5_csv(Producer_async):
             "files": self.files,
             "loop": self.loop,
             "meta": self.meta,
-            "annotation_holes": self.annotation_holes,
         }
 
     async def _async_run(self):
@@ -125,17 +108,9 @@ class In_playback_h5_csv(Producer_async):
         """
         fs = glob.glob(self.files)
         sleep_time = 1.0 / (self.sample_rate / self.emit_at_once)
-        print(sleep_time, self.sample_rate, self.emit_at_once)
         last_time = time.time()
 
-        # target_to_id = {key: key for i, key in enumerate(self.targets)}
-
-        self.ret_accu(self.channels, port=self.ports_out.channels)
         ctr = -1
-
-        # if self.annotation_holes not in target_to_id:
-        #     raise Exception('annotation filler must be in known targets. got',
-        #                     self.annotation_holes, target_to_id.keys())
 
         # TODO: add sigkill handler
         loop = True  # Should run at least once either way
@@ -145,63 +120,25 @@ class In_playback_h5_csv(Producer_async):
             ctr += 1
             self.info(ctr, f)
 
-            # Read and send data from file
-            with h5py.File(f, "r") as dataFile:
-                dataSet = dataFile.get("data")
-                start = 0
-                end = len(dataSet)
-                data = dataSet[start:end]  # load into mem
+            ts, annot, channels = self._read_data(f)
 
-                # Prepare framewise annotation to be send
-                targs = []
-                if os.path.exists(f.replace('.h5', '.csv')):
-                    ref = pd.read_csv(f.replace('.h5', '.csv'))
+            channels = self._overwrite_channels(channels, ts.shape[1])
 
-                    targs = []
-                    last_end = 0
-                    filler = self.annotation_holes  # use stand as filler for unknown. #Hack! TODO: remove
-                    for _, row in ref.iterrows():
-                        targs.append([filler] * (row['start'] - last_end))
-                        # +1 as the numbers are samples, ie the last sample still has that label
-                        targs.append(
-                            [str(row['act'])] * (row['end'] - row['start'])
-                        )  # +1 as the numbers are samples, ie the last sample still has that label
-                        last_end = row['end']
-                    targs.append([filler] * (len(data) - last_end))
-                    targs = list(np.concatenate(targs))
+            if ctr == 0:
+                self.ret_accu(channels, port=self.ports_out.channels)
 
-                    print(f, end, len(targs))
+            # TODO: for some reason i have no fucking clue about using read_data results in the annotation plot in draw recog to be wrong, although the targs are exactly the same (yes, if checked read_data()[1] == targs)...
+            for i in range(0, len(ts), self.emit_at_once):
+                result_data = np.array(ts[i : i + self.emit_at_once])
+                self.ret_accu(result_data, port=self.ports_out.ts)
 
-                    # last_end = 0
-                    # for _, row in ref.iterrows():
-                    #     # This is hacky af, but hey... achieves that we cann playback annotaitons with holes (and fill those) and also playback annotations without holes
-                    #     # if self.annotation_holes in target_to_id:
-                    #     targs += [self.annotation_holes] * (
-                    #         row['start'] - last_end
-                    #         )  # use stand as filler for unknown. #Hack! TODO: remove
-                    #     targs += [row['act'].strip()] * (row['end'] - row['start'])
-                    #     last_end = row['end']
-                    # # if self.annotation_holes in
-                    # targs += [self.annotation_holes] * (len(data) - last_end)
+                if len(annot[i : i + self.emit_at_once]) > 0:
+                    # use reshape -1, as the data can also be shorter than emit_at_once and will be adjusted accordingly
+                    self.ret_accu(annot[i : i + self.emit_at_once], port=self.ports_out.annot)
 
-                # TODO: for some reason i have no fucking clue about using read_data results in the annotation plot in draw recog to be wrong, although the targs are exactly the same (yes, if checked read_data()[1] == targs)...
-                for i in range(start, end, self.emit_at_once):
-                    # The data format is always: (time, channel)
-                    # self.debug(data[i:i+self.emit_at_once][0])
-                    result_data = np.array(data[i : i + self.emit_at_once])
-                    # n_channels = len(self.channels)
-                    # tmp_data = np.array([np.array([np.arange(i, i + self.emit_at_once) / 1000] * n_channels).T])
-                    # print(tmp_data.shape)
-                    self.ret_accu(result_data, port=self.ports_out.ts)
+                while time.time() < last_time + sleep_time:
+                    await asyncio.sleep(0.0001)
 
-                    if len(targs[i : i + self.emit_at_once]) > 0:
-                        # use reshape -1, as the data can also be shorter than emit_at_once and will be adjusted accordingly
-                        self.ret_accu(targs[i : i + self.emit_at_once], port=self.ports_out.annot)
+                last_time = time.time()
 
-                    # self.debug(time.time(), last_time + sleep_time, time.time() < last_time + sleep_time)
-                    while time.time() < last_time + sleep_time:
-                        await asyncio.sleep(0.0001)
-
-                    last_time = time.time()
-
-                    yield self.ret_accumulated()
+                yield self.ret_accumulated()

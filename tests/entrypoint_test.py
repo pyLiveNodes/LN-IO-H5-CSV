@@ -7,10 +7,10 @@ import pytest
 
 @pytest.fixture
 def discovered_modules():
-    exclude = ['__init__', 'utils', 'ports']
+    exclude = ['__init__', 'utils', 'ports', 'abstract']
     modules = glob.glob(join(dirname(__file__), '../src/livenodes_io_h5_csv/', "*.py"))
     names = [basename(f)[:-3] for f in modules if isfile(f)]
-    return [f for f in names if not f in exclude]
+    return [f for f in names if not any(f.startswith(ex) for ex in exclude)]
 
 
 class TestProcessing:

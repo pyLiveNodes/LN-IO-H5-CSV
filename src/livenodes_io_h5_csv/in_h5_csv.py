@@ -1,14 +1,11 @@
 import asyncio
 import glob
-import pandas as pd
-import h5py
 import os
-import numpy as np
 
 from typing import NamedTuple
 
-from livenodes.producer_async import Producer_async
-from livenodes_common_ports.ports import Ports_empty, Port_Timeseries, Port_Number, Port_List_Str, Port_ListUnique_Str
+from .abstract_in_h5_csv import Abstract_in_h5_csv
+from livenodes_common_ports.ports import Port_Timeseries, Port_Number, Port_List_Str, Port_ListUnique_Str
 
 
 class Ports_out(NamedTuple):
@@ -18,25 +15,7 @@ class Ports_out(NamedTuple):
     percent: Port_Number = Port_Number("Percent")
 
 
-def read_data(f):
-    try:
-        with h5py.File(f, 'r') as data_file:
-            data = data_file.get('data')[:]  # Load into mem
-
-        annot = []
-
-        if glob.glob(csv_file := f.replace(".h5", ".csv")):
-            if (annot_read := pd.read_csv(csv_file, delimiter=',').to_numpy()).size > 0:
-                annot = list(np.concatenate([[str(act)] * (end - start) for start, end, act in annot_read]))
-
-        return data, annot
-
-    except (OSError, TypeError):
-        print('Could not open file, skipping', f)
-        return np.array([[]]), []
-
-
-class In_h5_csv(Producer_async):
+class In_h5_csv(Abstract_in_h5_csv):
     """Reads and sends HDF5/.h5 data and corresponding .csv annotation.
 
     Each batch contains the entire dataset of a file. For custom batch sizes
@@ -82,22 +61,12 @@ class In_h5_csv(Producer_async):
         Percentage of files sent so far. Float values from 0.0 to 1.0.
     """
 
-    ports_in = Ports_empty()
     ports_out = Ports_out()
-
-    category = "Data Source"
-    description = ""
 
     example_init = {'name': 'In h5 CSV', 'files': 'data/*.h5', 'meta': {'channels': ["Channel 1"]}}
 
     def __init__(self, name="In h5 CSV", files='data', meta={}, **kwargs):
-        super().__init__(name, **kwargs)
-        self.files = files
-        self.meta = meta
-        self.channels = meta.get('channels')
-
-    def _settings(self):
-        return {"files": self.files, "meta": self.meta}
+        super().__init__(name, files, meta, **kwargs)
 
     async def _async_run(self):
         files = glob.glob(self.files)
@@ -107,15 +76,11 @@ class In_h5_csv(Producer_async):
         for i, f in enumerate(files):
             self.info(f'Processing {f}')
 
-            ts, annot = read_data(f)
+            ts, annot, channels = self._read_data(f)
 
-            channels = [str(x) for x in list(range(ts.shape[1]))]
+            channels = self._overwrite_channels(channels, ts.shape[1])
+
             percent = round((i + 1) / n_files, 2)
-
-            if self.channels is not None:
-                # Fill up, but only as far as smaller list allows
-                until = min(len(channels), len(self.channels))
-                channels[:until] = self.channels[:until]
 
             yield self.ret(ts=ts, channels=channels, annot=annot, percent=percent)
 
