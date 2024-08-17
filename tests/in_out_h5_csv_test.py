@@ -122,6 +122,20 @@ class TestProcessing:
         np.testing.assert_equal(actual_data, expected_data)
         np.testing.assert_equal(actual_channels, channels)
 
+    def test_overwrite_channels_empty(self, tmp_path):  # For Smart Studio
+        expected_data = _prepare_data(tmp_path)
+
+        channels = [""]
+        expected_channels = ["A", "B", "C", "D", "E"]
+
+        results = _run_test_pipeline(tmp_path, channels)
+
+        actual_data = np.array(results.ts.get_state())
+        actual_channels = results.channels.get_state()[0]
+
+        np.testing.assert_equal(actual_data, expected_data)
+        np.testing.assert_equal(actual_channels, expected_channels)
+
     def test_overwrite_more_channels(self, tmp_path):
 
         expected_data = _prepare_data(tmp_path)

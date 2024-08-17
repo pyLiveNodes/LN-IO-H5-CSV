@@ -67,7 +67,7 @@ class In_h5_csv(Abstract_in_h5_csv):
 
     ports_out = Ports_out()
 
-    example_init = {'name': 'In h5 CSV', 'files': 'data/*.h5', 'meta': {'channels': None}}
+    example_init = {'name': 'In h5 CSV', 'files': 'data/*.h5', 'meta': {'channels': [""]}}
 
     def __init__(self, name="In h5 CSV", files='data', meta={}, **kwargs):
         super().__init__(name, files, meta, **kwargs)

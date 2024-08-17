@@ -42,7 +42,7 @@ class Abstract_in_h5_csv(Producer_async, ABC):
     def _overwrite_channels(self, channels, n_channels):
         if not channels:
             channels = [str(x) for x in list(range(n_channels))]
-        if self.channels is not None:
+        if self.channels is not None and self.channels != [""]:  # Single empty string in Smart Studio equivalent to nothing set
             # Fill up, but only as far as smaller list allows
             until = min(len(channels), len(self.channels))
             channels[:until] = self.channels[:until]

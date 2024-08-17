@@ -70,7 +70,7 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
     example_init = {
         'name': 'Playback',
         'files': './data/*.h5',
-        'meta': {'sample_rate': 1000, 'channels': None},
+        'meta': {'sample_rate': 1000, 'channels': [""]},
         'emit_at_once': 10,
     }
 
