@@ -106,7 +106,7 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
             ctr += 1
             self.info(ctr, f)
 
-            ts, annot, channels = self._read_data(f)
+            ts, channels, annot = self._read_data(f)
 
             channels = self._overwrite_channels(channels, ts.shape[1])
 

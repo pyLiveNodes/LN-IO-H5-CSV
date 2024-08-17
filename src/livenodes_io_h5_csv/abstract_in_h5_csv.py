@@ -54,6 +54,13 @@ class Abstract_in_h5_csv(Producer_async, ABC):
             with h5py.File(f, 'r') as data_file:
                 data = data_file.get('data')[:]  # Load into mem
 
+            channels = []
+            if glob.glob(json_file := f.replace(".h5", ".json")):
+                with open(json_file, 'r') as json_f:
+                    entries = json.load(json_f)
+                    if "channels" in entries:
+                        channels = entries.get("channels")
+
             annot = []
             if glob.glob(csv_file := f.replace(".h5", ".csv")):
                 if (ref := pd.read_csv(csv_file, delimiter=',')).size > 0:
@@ -66,14 +73,7 @@ class Abstract_in_h5_csv(Producer_async, ABC):
                     annot.append([""] * (len(data) - last_end))
                     annot = list(np.concatenate(annot))
 
-            channels = []
-            if glob.glob(json_file := f.replace(".h5", ".json")):
-                with open(json_file, 'r') as f:
-                    entries = json.load(f)
-                    if "channels" in entries:
-                        channels = entries.get("channels")
-
-            return data, annot, channels
+            return data, channels, annot
 
         except (OSError, TypeError):
             print('Could not open file, skipping', f)

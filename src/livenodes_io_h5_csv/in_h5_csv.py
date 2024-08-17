@@ -80,10 +80,11 @@ class In_h5_csv(Abstract_in_h5_csv):
         for i, f in enumerate(files):
             self.info(f'Processing {f}')
 
-            ts, annot, channels = self._read_data(f)
+            ts, channels, annot = self._read_data(f)
+
+            channels = self._overwrite_channels(channels, ts.shape[1])
 
             annot = np.array(annot).reshape(-1, 1)
-            channels = self._overwrite_channels(channels, ts.shape[1])
 
             percent = round((i + 1) / n_files, 2)
 
