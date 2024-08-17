@@ -77,4 +77,4 @@ class Abstract_in_h5_csv(Producer_async, ABC):
 
         except (OSError, TypeError):
             print('Could not open file, skipping', f)
-            return np.array([[]]), [], []
+            return np.array([[]]), [], np.array([[]])
