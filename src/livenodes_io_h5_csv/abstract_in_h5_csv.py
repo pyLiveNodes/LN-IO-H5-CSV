@@ -48,7 +48,7 @@ class Abstract_in_h5_csv(Producer_async, ABC):
 
         if len(new_channels) != n_channels:
             raise ValueError(
-                f"Number of new channel names must equal number of actual channels. List {channels} is length {len(channels)}, but should be {n_channels}"
+                f"Number of new channel names must equal number of actual channels. List {new_channels} is length {len(new_channels)}, but should be {n_channels}."
             )
         return new_channels
 
