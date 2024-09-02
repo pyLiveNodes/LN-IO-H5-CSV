@@ -65,6 +65,12 @@ class In_playback_h5_csv(Abstract_in_h5_csv):
     annot : Port_TimeSeries, single channel
         Batch of annotation strings corresponding to data batch. Only sent
         if valid .csv annotation file found. Otherwise empty.
+
+    Raises
+    ------
+    ValueError
+        If number of channel names from meta parameter or JSON file does not
+        equal actual number of channels.
     """
 
     example_init = {

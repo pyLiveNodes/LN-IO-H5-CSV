@@ -1,6 +1,7 @@
 from typing import NamedTuple
 from glob import glob
 from pathlib import Path
+import pytest
 import os
 import numpy as np
 import logging
@@ -136,34 +137,13 @@ class TestProcessing:
         np.testing.assert_equal(actual_data, expected_data)
         np.testing.assert_equal(actual_channels, expected_channels)
 
-    def test_overwrite_more_channels(self, tmp_path):
+    def test_overwrite_wrong_channel_number(self, tmp_path, caplog):
 
-        expected_data = _prepare_data(tmp_path)
-
+        _ = _prepare_data(tmp_path)
         channels = ["CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7", "CH8"]
+        _ = _run_test_pipeline(tmp_path, channels)
 
-        results = _run_test_pipeline(tmp_path, channels)
-
-        actual_data = np.array(results.ts.get_state())
-        actual_channels = results.channels.get_state()[0]
-
-        np.testing.assert_equal(actual_data, expected_data)
-        np.testing.assert_equal(actual_channels, channels[:5])
-
-    def test_overwrite_fewer_channels(self, tmp_path):
-
-        expected_data = _prepare_data(tmp_path)
-
-        channels = ["CH1", "CH2"]
-        expected_channels = channels + ["C", "D", "E"]
-
-        results = _run_test_pipeline(tmp_path, channels)
-
-        actual_data = np.array(results.ts.get_state())
-        actual_channels = results.channels.get_state()[0]
-
-        np.testing.assert_equal(actual_data, expected_data)
-        np.testing.assert_equal(actual_channels, expected_channels)
+        assert "ValueError: Number of new channel names" in caplog.text
 
     def test_annot(self, tmp_path):
         _prepare_data(tmp_path, generate_annot=True)

@@ -63,6 +63,12 @@ class In_h5_csv(Abstract_in_h5_csv):
         .csv annotation file found. Otherwise empty.
     percent : Port_Number
         Percentage of files sent so far. Float values from 0.0 to 1.0.
+
+    Raises
+    ------
+    ValueError
+        If number of channel names from meta parameter or JSON file does not
+        equal actual number of channels.
     """
 
     ports_out = Ports_out()
