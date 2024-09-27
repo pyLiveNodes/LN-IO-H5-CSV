@@ -3,13 +3,13 @@ import glob
 import numpy as np
 import os
 
-from typing import NamedTuple
+from livenodes import Ports_collection
 
 from .abstract_in_h5_csv import Abstract_in_h5_csv
-from livenodes_common_ports.ports import Port_Timeseries, Port_Number, Port_ListUnique_Str
+from ln_ports import Port_Timeseries, Port_Number, Port_ListUnique_Str
 
 
-class Ports_out(NamedTuple):
+class Ports_out(Ports_collection):
     ts: Port_Timeseries = Port_Timeseries("TimeSeries")
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
     annot: Port_Timeseries = Port_Timeseries("Annotation")

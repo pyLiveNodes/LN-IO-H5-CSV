@@ -1,12 +1,25 @@
 from importlib.metadata import entry_points
+import asyncio
+import pytest 
 
 DEPRECATION_MODULES = []
+
+@pytest.fixture()
+def async_loop_provider():
+    # based on this answer: https://stackoverflow.com/a/39401087
+    print("setup")
+    # required by ready, typically done by graph, but since that's not available here, we do it manually
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    yield loop
+    print("teardown")
+    loop.close()
 
 
 class TestProcessing:
 
     def test_all_instantiable(self):
-        for x in entry_points()['livenodes.nodes']:
+        for x in entry_points(group='livenodes.nodes'):
             if x.name in DEPRECATION_MODULES:
                 continue
             print(x)
@@ -15,11 +28,11 @@ class TestProcessing:
             # implicit test if class is instantiable with default values
             node_class(**node_class.example_init)
 
-    def test_all_should_processable(self):
+    def test_all_should_processable(self, async_loop_provider):
         # Note: these are very crude tests!
         # Each node should also be tested separately.
 
-        for x in entry_points()['livenodes.nodes']:
+        for x in entry_points(group='livenodes.nodes'):
             if x.name in DEPRECATION_MODULES:
                 continue
             print(x)
@@ -27,6 +40,7 @@ class TestProcessing:
             node_class = x.load()
             # implicit test if class is instantiable with default values
             example_node = node_class(**node_class.example_init)
+            
             # not strictly correct, but needed before we cann call _should_process, due to pre-computations
             example_node.lock()
             example_node.ready({}, {})
@@ -45,11 +59,11 @@ class TestProcessing:
 
         # essentially: the types are not fully fledged out yet.. :/
 
-    def test_all_processable(self):
+    def test_all_processable(self, async_loop_provider):
         # Note: these are very crude tests!
         # Each node should also be tested separately.
 
-        for x in entry_points()['livenodes.nodes']:
+        for x in entry_points(group='livenodes.nodes'):
             if x.name in DEPRECATION_MODULES:
                 continue
             print(x)
@@ -57,6 +71,10 @@ class TestProcessing:
             node_class = x.load()
             # implicit test if class is instantiable with default values
             example_node = node_class(**node_class.example_init)
+            
+            # not strictly correct, but needed before we cann call _should_process, due to pre-computations
+            example_node.lock()
+            example_node.ready({}, {})
 
             # heuristic test if should process works with some of the example values provided in the port classes
             # if should process works and returns true, test if process works as well
