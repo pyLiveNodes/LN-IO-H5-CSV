@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from livenodes import Ports_collection
 from glob import glob
 from pathlib import Path
 import pytest
@@ -10,13 +10,13 @@ logging.basicConfig(level=logging.DEBUG)
 
 from livenodes import Graph
 
-from livenodes_io_h5_csv.out_h5_csv import Out_h5_csv
-from livenodes_io_h5_csv.in_h5_csv import In_h5_csv
+from ln_io_h5_csv.out_h5_csv import Out_h5_csv
+from ln_io_h5_csv.in_h5_csv import In_h5_csv
 from livenodes_io_python.out_python import Out_python
 from livenodes_io_python.in_python import In_python
 
 
-class Out_nodes(NamedTuple):
+class Out_nodes(Ports_collection):
     ts: Out_python
     channels: Out_python
     annot: Out_python

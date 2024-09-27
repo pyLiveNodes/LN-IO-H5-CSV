@@ -1,5 +1,5 @@
 [project]
-name = "Livenodes-IO-h5-csv"
+name = "LN-IO-h5-csv"
 dynamic = ['version']
 description = "LiveNodes: node based live streaming sensor/data and visualization suite."
 authors = [
@@ -9,20 +9,15 @@ authors = [
 # pip install . --extra-index-url https://package_puller:8qYs4hBAsmAHJ5AdS_y9@gitlab.csl.uni-bremen.de/api/v4/groups/368/-/packages/pypi/simple
 # pip install -e . --extra-index-url https://package_puller:8qYs4hBAsmAHJ5AdS_y9@gitlab.csl.uni-bremen.de/api/v4/groups/368/-/packages/pypi/simple
 dependencies = [
-    "livenodes>=v0.11.3",
-    "livenodes_common_ports>=0.9.0b3",
+    "livenodes>=v0.12.1b1",
+    "ln_ports>=0.12.1b1",
     "livenodes_io_python",
     "numpy>=1.24.4",
     "tsfel",
     "h5py",
     "joblib>=1.4.2",
-    "pyarrow>=16.0.0",
-
-    "setuptools>=60.0.0, <67"
+    "pyarrow>=16.0.0"
 ]
-# setuptools version is specified due to a problem in livenodes (presumably phx-class-registry), which causes an deprectation error
-# Implementing implicit namespace packages (as specified in PEP 420) is preferred to `pkg_resources.declare_namespace`. See https://setuptools.pypa.io/en/latest/references/keywords.html#keyword-namespace-packages
-# FIX upstream and remove here
 
 [project.entry-points."livenodes.nodes"]
 in_h5_csv = "livenodes_io_h5_csv.in_h5_csv:In_h5_csv"
@@ -38,9 +33,9 @@ dev = [
 
 [build-system]
 requires = [
-    "setuptools>=60.0.0, <67.3.0",
+    "setuptools>=60.0.0",
     "wheel",
-    "setuptools_scm >= 2.0.0, <3",
+    "setuptools_scm >= 3.0.0",
     "setuptools-git-versioning"
 ]
 build-backend = 'setuptools.build_meta'
@@ -49,6 +44,6 @@ build-backend = 'setuptools.build_meta'
 enabled = true
 
 [tool.black]
-line-length = 140
-target-version = ['py38']
+line-length = 180
+target-version = ['py312']
 skip-string-normalization = true

@@ -8,11 +8,11 @@ import numpy as np
 from livenodes.node import Node
 
 
-from livenodes_common_ports.ports import Port_ListUnique_Str, Port_Timeseries, Ports_empty
-from typing import NamedTuple
+from ln_ports import Port_ListUnique_Str, Port_Timeseries, Ports_empty
+from livenodes import Ports_collection
 
 
-class Ports_in(NamedTuple):
+class Ports_in(Ports_collection):
     ts: Port_Timeseries = Port_Timeseries("TimeSeries")
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
     annot: Port_Timeseries = Port_Timeseries("Annotation")

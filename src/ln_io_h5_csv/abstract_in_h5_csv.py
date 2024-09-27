@@ -5,13 +5,13 @@ import pandas as pd
 import h5py
 import numpy as np
 
-from typing import NamedTuple
+from livenodes import Ports_collection
 
 from livenodes.producer_async import Producer_async
-from livenodes_common_ports.ports import Ports_empty, Port_Timeseries, Port_ListUnique_Str
+from ln_ports import Ports_empty, Port_Timeseries, Port_ListUnique_Str
 
 
-class Ports_out(NamedTuple):
+class Ports_out(Ports_collection):
     ts: Port_Timeseries = Port_Timeseries("TimeSeries")
     channels: Port_ListUnique_Str = Port_ListUnique_Str("Channel Names")
     annot: Port_Timeseries = Port_Timeseries("Annotation")
