@@ -11,19 +11,18 @@ authors = [
 dependencies = [
     "livenodes>=v0.12.1b1",
     "ln_ports>=0.12.1b1",
-    "livenodes_io_python",
+    "ln_io_python>=0.12.1b1",
     "numpy>=1.24.4",
-    "tsfel",
     "h5py",
     "joblib>=1.4.2",
     "pyarrow>=16.0.0"
 ]
 
 [project.entry-points."livenodes.nodes"]
-in_h5_csv = "livenodes_io_h5_csv.in_h5_csv:In_h5_csv"
-in_playback_h5_csv = "livenodes_io_h5_csv.in_playback_h5_csv:In_playback_h5_csv"
-out_h5_csv = "livenodes_io_h5_csv.out_h5_csv:Out_h5_csv"
-annotate_channel = "livenodes_io_h5_csv.annotate_channel:Annotate_channel"
+in_h5_csv = "ln_io_h5_csv.in_h5_csv:In_h5_csv"
+in_playback_h5_csv = "ln_io_h5_csv.in_playback_h5_csv:In_playback_h5_csv"
+out_h5_csv = "ln_io_h5_csv.out_h5_csv:Out_h5_csv"
+annotate_channel = "ln_io_h5_csv.annotate_channel:Annotate_channel"
 
 [project.optional-dependencies]
 dev = [

@@ -1,4 +1,4 @@
-from livenodes import Ports_collection
+from typing import NamedTuple
 import numpy as np
 import logging
 
@@ -8,11 +8,11 @@ from livenodes import Graph
 
 from ln_io_h5_csv.out_h5_csv import Out_h5_csv
 from ln_io_h5_csv.in_playback_h5_csv import In_playback_h5_csv
-from livenodes_io_python.out_python import Out_python
-from livenodes_io_python.in_python import In_python
+from ln_io_python.out_python import Out_python
+from ln_io_python.in_python import In_python
 
 
-class Out_nodes(Ports_collection):
+class Out_nodes(NamedTuple):
     ts: Out_python
     channels: Out_python
     annot: Out_python
