@@ -1,4 +1,4 @@
-from livenodes import Ports_collection
+from typing import NamedTuple
 import numpy as np
 import logging
 
@@ -11,7 +11,7 @@ from ln_io_python.out_python import Out_python
 from ln_io_python.in_python import In_python
 
 
-class Results(Ports_collection):
+class Results(NamedTuple):
     ts: np.ndarray
     channels: np.ndarray
     annot: np.ndarray
