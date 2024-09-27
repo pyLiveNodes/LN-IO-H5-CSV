@@ -7,7 +7,7 @@ Submodules
 livenodes\_io\_h5\_csv.annotate\_channel module
 -----------------------------------------------
 
-.. automodule:: livenodes_io_h5_csv.annotate_channel
+.. automodule:: ln_io_h5_csv.annotate_channel
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ livenodes\_io\_h5\_csv.annotate\_channel module
 livenodes\_io\_h5\_csv.in\_h5\_csv module
 -----------------------------------------
 
-.. automodule:: livenodes_io_h5_csv.in_h5_csv
+.. automodule:: ln_io_h5_csv.in_h5_csv
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ livenodes\_io\_h5\_csv.in\_h5\_csv module
 livenodes\_io\_h5\_csv.in\_playback\_h5\_csv module
 ---------------------------------------------------
 
-.. automodule:: livenodes_io_h5_csv.in_playback_h5_csv
+.. automodule:: ln_io_h5_csv.in_playback_h5_csv
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +31,7 @@ livenodes\_io\_h5\_csv.in\_playback\_h5\_csv module
 livenodes\_io\_h5\_csv.out\_h5\_csv module
 ------------------------------------------
 
-.. automodule:: livenodes_io_h5_csv.out_h5_csv
+.. automodule:: ln_io_h5_csv.out_h5_csv
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ livenodes\_io\_h5\_csv.out\_h5\_csv module
 Module contents
 ---------------
 
-.. automodule:: livenodes_io_h5_csv
+.. automodule:: ln_io_h5_csv
    :members:
    :undoc-members:
    :show-inheritance:

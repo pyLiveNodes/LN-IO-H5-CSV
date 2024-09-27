@@ -6,9 +6,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 from livenodes import Graph
 
-from livenodes_io_h5_csv.annotate_channel import Annotate_channel
-from livenodes_io_python.out_python import Out_python
-from livenodes_io_python.in_python import In_python
+from ln_io_h5_csv.annotate_channel import Annotate_channel
+from ln_io_python.out_python import Out_python
+from ln_io_python.in_python import In_python
 
 
 class Results(NamedTuple):
