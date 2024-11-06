@@ -1,3 +1,6 @@
+[![Format and Test](https://github.com/pyLiveNodes/LN-IO-H5-CSV/actions/workflows/format_test.yml/badge.svg)](https://github.com/pyLiveNodes/LN-IO-H5-CSV/actions/workflows/format_test.yml)
+[![Publish](https://github.com/pyLiveNodes/LN-IO-H5-CSV/actions/workflows/publish.yml/badge.svg)](https://github.com/pyLiveNodes/LN-IO-H5-CSV/actions/workflows/publish.yml)
+
 # LiveNodes IO H5 CSV
 
 The LiveNodes IO H5 CSV package provides nodes for data input and output using HDF5/.h5 data files. Optionally, this also includes data annotations via .csv

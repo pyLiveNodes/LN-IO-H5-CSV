@@ -33,7 +33,7 @@ dev = [
 requires = [
     "setuptools>=60.0.0",
     "wheel",
-    "setuptools_scm >= 3.0.0",
+    "setuptools_scm >= 8.0.0",
     "setuptools-git-versioning"
 ]
 build-backend = 'setuptools.build_meta'
